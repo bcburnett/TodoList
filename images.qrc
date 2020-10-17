@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>img/giphy.gif</file>
+        <file>img/loose.gif</file>
+        <file>img/s0.png</file>
+        <file>img/s1.png</file>
+        <file>img/s2.png</file>
+        <file>img/s3.png</file>
+        <file>img/s4.png</file>
+        <file>img/s5.png</file>
+        <file>img/s6.png</file>
+    </qresource>
+    <qresource prefix="/"/>
+</RCC>
