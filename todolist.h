@@ -6,6 +6,7 @@
 #include<QPixmap>
 #include<QString>
 #include <QtSql>
+#include <QList>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -46,12 +47,12 @@ class TodoList : public QMainWindow {
   Ui::TodoList* ui;
   // class variables
   static QSqlDatabase db;
-  static QMap<int, QPixmap> imap;
+  static QVector<QPixmap> imap;
   static state mstate;
   // class functions
   void enabledisableKeyboard(bool);
   void setDisplay(state);
-  QMap<int, QPixmap> setImages();
+  QVector<QPixmap> setImages();
   state clearstate(state);
   state gameWon(state);
   state gameLost(state);

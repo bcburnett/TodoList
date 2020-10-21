@@ -2,7 +2,7 @@
 #include "ui_todolist.h"
 
 // qmap to hold the game images
-QMap<int, QPixmap> TodoList::imap;
+QVector<QPixmap> TodoList::imap;
 // game state
 state TodoList::mstate;
 // phrase database
@@ -24,6 +24,9 @@ TodoList::TodoList(QWidget* parent)
   imap = setImages();
 
   // set the on-screen keyboard / used letter display to call the keyboard button pressed function for all buttons except the reset button.
+  // we need to make that distinction as the reset button is attached to the on_RESET_clicked function, but the for loop
+  // will pick it up as a member of the keyboard layout grid layout container. we only need one handler for the letter buttons
+  // because we are doing the same thing regardless of which button was pressed.
   for (int i = 0; i < ui->keyboardLayout->count(); ++i) {
     QWidget* widget = ui->keyboardLayout->itemAt( i )->widget();
     QPushButton* button = qobject_cast<QPushButton*>( widget );
@@ -41,15 +44,16 @@ TodoList::~TodoList() {
 }
 
 //slots
-void TodoList::keyboardButtonPressed() {
-  QPushButton* button = qobject_cast<QPushButton*>( sender() );
-  // button holds the button that was pressed
+// these functions are connected to ui events
 
+void TodoList::keyboardButtonPressed() {
+  // button holds the button that was pressed
+  QPushButton* button = qobject_cast<QPushButton*>( sender() );
   // if a button was clicked and it wasn't the reset button
   if ( button && !(button->text() == "RESET")  ) {
     //disable the button
     button->setEnabled(false);
-    // send the letter from the button text and the current state to the checkletter function
+    // send the letter from the button text and the current state to the checkletter function and get next state
     TodoList::mstate = checkletter(button->text(), TodoList::mstate);
     //pass the state to the display function to update the display
     setDisplay(TodoList::mstate);
@@ -59,8 +63,6 @@ void TodoList::keyboardButtonPressed() {
 void TodoList::on_RESET_clicked() {
   // set the base game state with a new phrase and category
   TodoList::mstate = clearstate(TodoList::mstate);
-  // if something went wrong with the database (there may be a table or two without a line #1) try again
-  if(TodoList::mstate.phrase == "") on_RESET_clicked();
   // pass the state to the display function
   setDisplay(TodoList::mstate);
 }
@@ -86,17 +88,17 @@ void TodoList::setDisplay(state mstate) {
 }
 
 // load the images into the image map
-QMap<int, QPixmap> TodoList::setImages() {
-  QMap<int, QPixmap> imap;
-  imap[0] = QPixmap(":/img/img/s0.png");
-  imap[1] = QPixmap(":/img/img/s1.png");
-  imap[2] = QPixmap(":/img/img/s2.png");
-  imap[3] = QPixmap(":/img/img/s3.png");
-  imap[4] = QPixmap(":/img/img/s4.png");
-  imap[5] = QPixmap(":/img/img/s5.png");
-  imap[6] = QPixmap(":/img/img/s6.png");
-  imap[7] = QPixmap(":/img/img/giphy.gif");
-  imap[8] = QPixmap(":/img/img/loose.gif");
+QVector<QPixmap> TodoList::setImages() {
+  QVector<QPixmap> imap;
+  imap.append(QPixmap(":/img/img/s0.png"));
+  imap.append(QPixmap(":/img/img/s1.png"));
+  imap.append(QPixmap(":/img/img/s2.png"));
+  imap.append(QPixmap(":/img/img/s3.png"));
+  imap.append(QPixmap(":/img/img/s4.png"));
+  imap.append(QPixmap(":/img/img/s5.png"));
+  imap.append(QPixmap(":/img/img/s6.png"));
+  imap.append(QPixmap(":/img/img/giphy.gif"));
+  imap.append(QPixmap(":/img/img/loose.gif"));
   return imap;
 }
 
@@ -123,17 +125,23 @@ state TodoList::clearstate(state mstate) {
       mstate.phrase = queryphrase.value(0).toString();
       mstate.category = query.value(1).toString();
     }
+    // if something went wrong with the database (there may be a table or two without a line #1) try again
+    else on_RESET_clicked();
   }
 
   for(int i = 0; i < mstate.phrase.length(); i++ ) {
     // parse the phrase and generate the displayed phrase for the user
+    // assign the character
     mstate.parsedphrase[i].chr = mstate.phrase.at(i);
+    // set the visible state of the character based on the 'freeplay' characters
     mstate.parsedphrase[i].show = QString("- '?&\"").contains(mstate.phrase.at(i));
+    // build the displayed phrase string
     mstate.displayedphrase += (mstate.parsedphrase[i].show ? mstate.parsedphrase[i].chr : "_");
   }
 
   // enable the keyboard
   enabledisableKeyboard(true);
+  // put the game in play
   return mstate;
 }
 
@@ -142,20 +150,21 @@ state TodoList::checkletter(QString letter, state mstate) {
   mstate.displayedphrase.clear();
   // if the user entered a correct letter, right will be true after the next check
   bool right = false;
-  foreach(int i, mstate.parsedphrase.keys()) if(mstate.parsedphrase[i].chr == letter) right = mstate.parsedphrase[i].show = true ;
+  for(int i : mstate.parsedphrase.keys()) if(mstate.parsedphrase[i].chr == letter) right = mstate.parsedphrase[i].show = true ;
   // increment wrongguesses by 0 or 1 depending on wether they guessed a correct letter
   mstate.wrongguesses += !right;
   //generate the new displayed phrase
-  foreach(mychr i, mstate.parsedphrase.values()) mstate.displayedphrase += i.show ? i.chr : "_";
+  for(mychr i : mstate.parsedphrase.values()) mstate.displayedphrase += i.show ? i.chr : "_";
   // check if the game is won
   mstate.gameover = true;
   // if all the letters are guessed, gameover will still be true after this check
-  foreach(mychr i, mstate.parsedphrase.values()) mstate.gameover &= i.show;
+  for(mychr i : mstate.parsedphrase.values()) mstate.gameover &= i.show;
   if(mstate.gameover) return gameWon(mstate);
   // check if the game is lost
   if(mstate.wrongguesses > 6) return gameLost(mstate);
   // otherwise pass back current state
   return mstate;
+
 }
 
 // set the winning state
