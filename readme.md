@@ -4,5 +4,5 @@
 
 ## 50,000 wheel of fortune like phrases
 
-![Screen Shot](/screenshot.png)
+![Screen Shot](Screenshot.png)
 Format: ![Alt Text](url)
