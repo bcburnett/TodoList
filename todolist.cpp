@@ -37,7 +37,6 @@ void TodoList::keyboardButtonPressed() {
 }
 
 void TodoList::on_RESET_clicked() {
-  enabledisableKeyboard(true);
   TodoList::mstate = clearstate(TodoList::mstate);
   if(TodoList::mstate.phrase == "") on_RESET_clicked();
   setDisplay(TodoList::mstate);
@@ -97,6 +96,8 @@ state TodoList::clearstate(state mstate) {
     mstate.parsedphrase[i].show = QString("- '?&\"").contains(mstate.phrase.at(i));
     mstate.displayedphrase += (mstate.parsedphrase[i].show ? mstate.parsedphrase[i].chr : "_");
   }
+
+  enabledisableKeyboard(true);
   return mstate;
 }
 

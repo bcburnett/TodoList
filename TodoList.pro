@@ -25,3 +25,6 @@ QMAKE_LFLAGS += -no-pie
 
 RESOURCES += \
     images.qrc
+
+DISTFILES += \
+    readme.md
