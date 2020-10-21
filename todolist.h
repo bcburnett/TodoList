@@ -12,10 +12,14 @@ namespace Ui {
 class TodoList;
 }
 QT_END_NAMESPACE
+
+// struct for the characters a character and a boolean to determine if the character is visible.
 struct mychr {
   QString chr;
   bool show;
 };
+
+// the entire state of the game
 struct state {
   QString category;
   QString phrase;
@@ -24,22 +28,27 @@ struct state {
   bool gameover;
   int wrongguesses;
 };
+
 class TodoList : public QMainWindow {
   Q_OBJECT
 
  public:
+  // constructor / destructor
   TodoList(QWidget* parent = nullptr);
   ~TodoList();
 
  private slots:
+  // connected to the ui form buttons
   void on_RESET_clicked();
   void keyboardButtonPressed();
 
  private:
   Ui::TodoList* ui;
+  // class variables
   static QSqlDatabase db;
   static QMap<int, QPixmap> imap;
   static state mstate;
+  // class functions
   void enabledisableKeyboard(bool);
   void setDisplay(state);
   QMap<int, QPixmap> setImages();
