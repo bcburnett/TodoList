@@ -44,8 +44,6 @@ class TodoList : public QMainWindow {
   void setDisplay(state);
   QMap<int, QPixmap> setImages();
   state clearstate(state);
-  state getcatandphrase(state);
-  state parsephrase(state);
   state gameWon(state);
   state gameLost(state);
   state checkletter(QString, state);

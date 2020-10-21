@@ -11,11 +11,17 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TodoList</string>
+   <string>Letter Guess Game</string>
+  </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
   </property>
   <property name="styleSheet">
    <string notr="true">TodoList{
-background-color: #aaaa00;
+background-color: #00d400;
 }
 
 QPushButton{
@@ -38,7 +44,7 @@ background-color: grey;
      </rect>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Box</enum>
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="text">
      <string/>
@@ -71,7 +77,7 @@ background-color: grey;
        <property name="maximumSize">
         <size>
          <width>32</width>
-         <height>16777215</height>
+         <height>32</height>
         </size>
        </property>
        <property name="text">
