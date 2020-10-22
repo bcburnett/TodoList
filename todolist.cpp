@@ -114,7 +114,7 @@ state TodoList::clearstate(state mstate) {
   // query the database for the category and phrase
   // first pick a random category, then pick a random phrase from that table
   QSqlQuery query;
-  query.prepare("SELECT tablename, title FROM categories order by Random() limit 1");
+  query.prepare("SELECT * FROM random_category");
   try {
     query.exec();
     query.first();
@@ -133,8 +133,7 @@ state TodoList::clearstate(state mstate) {
     mstate.phrase = queryphrase.value(0).toString();
     mstate.category = query.value(1).toString();
   }
-  // if something went wrong with the database (there may be a table or two without a line #1) try again
-  else on_RESET_clicked();
+  if(mstate.phrase == "") on_RESET_clicked();
 
 
   for(int i = 0; i < mstate.phrase.length(); i++ ) {
