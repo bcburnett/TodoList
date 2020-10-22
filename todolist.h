@@ -7,6 +7,7 @@
 #include<QString>
 #include <QtSql>
 #include <QList>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -45,10 +46,12 @@ class TodoList : public QMainWindow {
 
  private:
   Ui::TodoList* ui;
+
   // class variables
   static QSqlDatabase db;
   static QVector<QPixmap> imap;
   static state mstate;
+
   // class functions
   void enabledisableKeyboard(bool);
   void setDisplay(state);

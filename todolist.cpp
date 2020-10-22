@@ -1,7 +1,7 @@
 #include "todolist.h"
 #include "ui_todolist.h"
 
-// qmap to hold the game images
+// dictionary to hold the game images
 QVector<QPixmap> TodoList::imap;
 // game state
 state TodoList::mstate;
@@ -16,7 +16,7 @@ TodoList::TodoList(QWidget* parent)
   // open the sqlite database
   TodoList::db = QSqlDatabase::addDatabase("QSQLITE");
   // on my system i have a dir called data in my home folder
-  TodoList::db.setDatabaseName(QString(getenv("HOME")) + "/data/letterguess/phrases.db");
+  TodoList::db.setDatabaseName(QString( "/var/lib/letterguess/phrases.db"));
   // and finally open the database
   TodoList::db.open();
 
@@ -115,9 +115,18 @@ state TodoList::clearstate(state mstate) {
   // first pick a random category, then pick a random phrase from that table
   QSqlQuery query;
   query.prepare("SELECT tablename, title FROM categories order by Random() limit 1");
-  if(query.exec()) query.first();
+  try {
+    query.exec();
+    query.first();
+  } catch(...) {
+    QMessageBox msgBox;
+    msgBox.setText("Cannot select a category.");
+    msgBox.exec();
+    exit(1);
+  }
   QSqlQuery queryphrase;
-  //  deepcode ignore Sqli: the database is a read-only file, no injection possible as there is no way for the user to enter the table name
+  //  deepcode ignore Sqli: the database is a read-only file, no injection possible as there is no way for
+  //  the user to specify the table name or change the database in any way from within the program.
   queryphrase.prepare("SELECT phrase FROM " +   query.value(0).toString()  + " order by Random() limit 1");
   if(queryphrase.exec() && queryphrase.first()) {
     // set the state variables for phrase and category
