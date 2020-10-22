@@ -125,8 +125,7 @@ state TodoList::clearstate(state mstate) {
     exit(1);
   }
   QSqlQuery queryphrase;
-  //  deepcode ignore Sqli: the database is a read-only file, no injection possible as there is no way for
-  //  the user to specify the table name or change the database in any way from within the program.
+  //  deepcode ignore Sqli: the database is a read-only file, no injection possible as there is no way for the user to specify the table name or change the database in any way from within the program.
   queryphrase.prepare("SELECT phrase FROM " +   query.value(0).toString()  + " order by Random() limit 1");
   if(queryphrase.exec() && queryphrase.first()) {
     // set the state variables for phrase and category
