@@ -114,27 +114,25 @@ state TodoList::clearstate(state mstate) {
   // query the database for the category and phrase
   // first pick a random category, then pick a random phrase from that table
   QSqlQuery query;
-  query.prepare("SELECT tablename, title FROM categories limit 1 offset abs(random()) % (select count(*)from categories)");
-  if(query.exec() && query.first()) {
-    auto table = query.value(0).toString();
-    auto phrase = "SELECT phrase FROM " + table + " limit 1 offset abs(random()) % (select count(*)from " + table + ")";
-    QSqlQuery queryphrase;
-    queryphrase.prepare(phrase);
-    if(queryphrase.exec() && queryphrase.first()) {
-      // set the state variables for phrase and category
-      mstate.phrase = queryphrase.value(0).toString();
-      mstate.category = query.value(1).toString();
-    }
-    // if something went wrong with the database (there may be a table or two without a line #1) try again
-    else on_RESET_clicked();
+  query.prepare("SELECT tablename, title FROM categories order by Random() limit 1");
+  if(query.exec()) query.first();
+  QSqlQuery queryphrase;
+  queryphrase.prepare("SELECT phrase FROM " +   query.value(0).toString()  + " order by Random() limit 1");
+  if(queryphrase.exec() && queryphrase.first()) {
+    // set the state variables for phrase and category
+    mstate.phrase = queryphrase.value(0).toString();
+    mstate.category = query.value(1).toString();
   }
+  // if something went wrong with the database (there may be a table or two without a line #1) try again
+  else on_RESET_clicked();
+
 
   for(int i = 0; i < mstate.phrase.length(); i++ ) {
     // parse the phrase and generate the displayed phrase for the user
     // assign the character
     mstate.parsedphrase[i].chr = mstate.phrase.at(i);
     // set the visible state of the character based on the 'freeplay' characters
-    mstate.parsedphrase[i].show = QString("- '?&\"").contains(mstate.phrase.at(i));
+    mstate.parsedphrase[i].show = QString("!- '?&\"").contains(mstate.phrase.at(i));
     // build the displayed phrase string
     mstate.displayedphrase += (mstate.parsedphrase[i].show ? mstate.parsedphrase[i].chr : "_");
   }
